@@ -23,6 +23,11 @@ public class Program {
 			System.out.println(obj);
 		}
 		
+		System.out.println("\n=== TESTE 3: Vendedor findAll ===");// teste do vendendo, buscando informaçoes no banco
+		list = vendedor.findAll();
+		for (Vendedor obj : list) {
+			System.out.println(obj);
+		}
 		
 	}
 
