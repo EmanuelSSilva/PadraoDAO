@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -51,8 +54,8 @@ public class VendedorDaoJDBC implements VendedorDao {
 			st.setInt(1, id);
 			rs =st.executeQuery();
 			if (rs.next()) {
-				Departamento dep = intanciaDepatarmento(rs);
-				Vendedor vend = intaciaVendedor(rs, dep);
+				Departamento dep = instanciaDepatarmento(rs);
+				Vendedor vend = instaciaVendedor(rs, dep);
 				return vend;
 			}	
 			return null;	
@@ -67,7 +70,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 		}
 	}
 
-	private Vendedor intaciaVendedor(ResultSet rs, Departamento dep) throws SQLException {
+	private Vendedor instaciaVendedor(ResultSet rs, Departamento dep) throws SQLException {
 		Vendedor vend = new Vendedor();
 		vend.setId(rs.getInt("Id"));
 		vend.setNome(rs.getString("Name"));
@@ -78,7 +81,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 		return vend;
 	}
 
-	private Departamento intanciaDepatarmento(ResultSet rs) throws SQLException {
+	private Departamento instanciaDepatarmento(ResultSet rs) throws SQLException {
 		Departamento dep = new Departamento();
 		dep.setId(rs.getInt("DepartmentId"));
 		dep.setNome(rs.getString("DepName"));
@@ -89,6 +92,47 @@ public class VendedorDaoJDBC implements VendedorDao {
 	public List<Vendedor> findAll() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Vendedor> findByDepartamento(Departamento departamento) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+				"SELECT seller.*, department.Name as DepName "
+				+ "FROM seller INNER JOIN department "
+				+ "ON seller.DepartmentId = department.Id "
+				+ "WHERE DepartmentId = ? "
+				+ "ORDER BY Name ");
+			st.setInt(1, departamento.getId());
+			
+			rs = st.executeQuery();
+			
+			List <Vendedor> list = new ArrayList<>();
+			Map<Integer, Departamento> map= new HashMap<>();
+			
+			while (rs.next()) {
+				Departamento dep = map.get(rs.getInt("DepartmentId"));
+				if(dep == null) {
+					dep = instanciaDepatarmento(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				
+				Vendedor vend = instaciaVendedor(rs, dep);
+				list.add(vend);
+			}	
+			return list;	
+			
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		
 	}
 	
 
