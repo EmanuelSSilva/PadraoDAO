@@ -30,12 +30,17 @@ public class Program {
 		for (Vendedor obj : list) {
 			System.out.println(obj);
 		}
-		
+		/*
 		System.out.println("\n=== TESTE 4: Vendedor Insert ===");// Inserindo vendedor no banco
 		Vendedor novoVendedor = new Vendedor(null, "Antonio", "antonio@gmail.com", new Date(), 4000.0, departamento );
 		vendedor.insert(novoVendedor);
 		System.out.println("Inserido! Novo Id - " + novoVendedor.getId());
-		
+		*/
+		System.out.println("\n=== TESTE 5: Vendedor Updade ===");// Atualizando vendedor no banco
+		vend = vendedor.findById(1); //carregando os dados do vendedor com id 1
+		vend.setNome("Algusto Cesar");// Alterando o nome 
+		vendedor.update(vend);//Realizando a atualização
+		System.out.println("Atualização Completa!!!!!");
 	}
 
 }
